@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Security Post Orders</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+
+      .container {
+        background-color: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      }
+
+      h1,
+      h2,
+      h3 {
+        color: #2c3e50;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 30px;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 10px;
+      }
+
+      h2 {
+        background-color: #3498db;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 30px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+
+      input[type="text"],
+      input[type="number"],
+      input[type="time"],
+      input[type="password"],
+      select,
+      textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 16px;
+        min-height: 40px;
+      }
+
+      textarea {
+        min-height: 100px;
+        resize: vertical;
+      }
+
+      .expandable {
+        min-height: 40px;
+        resize: vertical;
+        overflow: hidden;
+      }
+
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 -10px;
+      }
+
+      .col {
+        flex: 1;
+        padding: 0 10px;
+        min-width: 200px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
+
+      table,
+      th,
+      td {
+        border: 1px solid #ddd;
+      }
+
+      th,
+      td {
+        padding: 12px;
+        text-align: left;
+      }
+
+      th {
+        background-color: #f2f2f2;
+      }
+
+      .checkbox-group {
+        display: flex;
+        align-items: center;
+      }
+
+      .checkbox-group input[type="radio"] {
+        margin-right: 5px;
+      }
+
+      .checkbox-group label {
+        margin-right: 15px;
+        font-weight: normal;
+      }
+
+      .step-container {
+        margin-bottom: 30px;
+        border: 1px solid #ddd;
+        padding: 15px;
+        border-radius: 5px;
+      }
+
+      .step-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .step-number {
+        font-weight: bold;
+        font-size: 18px;
+      }
+
+      .remove-step {
+        background-color: #e74c3c;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+
+      .image-preview-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .image-preview {
+        position: relative;
+        width: 100%;
+        max-width: 600px;
+        height: auto;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .image-preview img {
+        width: 100%;
+        height: auto;
+        max-height: 400px;
+        object-fit: contain;
+      }
+
+      .remove-image {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background-color: rgba(231, 76, 60, 0.8);
+        color: white;
+        border: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .file-upload {
+        margin-top: 10px;
+      }
+
+      .signature-container {
+        margin-top: 30px;
+        border-top: 1px solid #ddd;
+        padding-top: 20px;
+      }
+
+      .signature-pad {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-bottom: 10px;
+      }
+
+      .button-group {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
+      }
+
+      .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+      }
+
+      .btn-primary {
+        background-color: #3498db;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background-color: #2980b9;
+      }
+
+      .btn-success {
+        background-color: #2ecc71;
+        color: white;
+      }
+
+      .btn-success:hover {
+        background-color: #27ae60;
+      }
+
+      .btn-danger {
+        background-color: #e74c3c;
+        color: white;
+      }
+
+      .btn-danger:hover {
+        background-color: #c0392b;
+      }
+
+      .add-step {
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 3px;
+        cursor: pointer;
+        margin-bottom: 20px;
+      }
+
+      .document-preview {
+        margin-top: 10px;
+      }
+
+      .document-item {
+        display: flex;
+        align-items: center;
+        padding: 8px;
+        background-color: #f9f9f9;
+        border-radius: 4px;
+        margin-bottom: 5px;
+      }
+
+      .document-item span {
+        flex-grow: 1;
+      }
+
+      .document-item button {
+        background-color: #e74c3c;
+        color: white;
+        border: none;
+        padding: 3px 8px;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+
+      @media print {
+        body {
+          background-color: white;
+          padding: 0;
+        }
+
+        .container {
+          box-shadow: none;
+          padding: 0;
+        }
+
+        .no-print {
+          display: none;
+        }
+
+        textarea,
+        input,
+        select {
+          border: none;
+          background-color: transparent;
+          resize: none;
+          overflow: hidden;
+        }
+
+        .step-container,
+        .image-preview-container {
+          page-break-inside: avoid;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container" id="post-orders-form">
+      <h1>Security Post Orders</h1>
+
+      <!-- Section 1: Information about Post -->
+      <div id="section-1-post-info">
+        <h2>1. Post Information</h2>
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label for="post-name">Post Name</label>
+              <input type="text" id="post-name" class="expandable" />
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label for="post-type">Post Type</label>
+              <input type="text" id="post-type" class="expandable" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="post-address">Post Address</label>
+          <textarea
+            id="post-address"
+            class="expandable"
+            maxlength="200"
+          ></textarea>
+          <div
+            id="post-address-counter"
+            class="no-print"
+            style="font-size: 12px; color: gray; margin-top: 5px"
+          >
+            200 characters remaining
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label for="service-type">Service Type</label>
+              <select id="service-type">
+                <option value="">Select</option>
+                <option value="Patrol">Patrol</option>
+                <option value="Stand Guard">Stand Guard</option>
+              </select>
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label for="service-specification">Service Specification</label>
+              <select id="service-specification">
+                <option value="">Select</option>
+                <option value="Armed">Armed</option>
+                <option value="Unarmed">Unarmed</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label for="quantity-guards">Quantity of Guards</label>
+              <input type="number" id="quantity-guards" min="1" />
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label>Service Hours</label>
+              <div style="display: flex; align-items: center; gap: 10px">
+                <input type="time" id="service-hours-from" />
+                <span>to</span>
+                <input type="time" id="service-hours-to" />
+                <div style="margin-left: auto">
+                  <input type="checkbox" id="24-7" style="width: auto" />
+                  <label for="24-7" style="display: inline">24/7</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label for="point-contact">Point of Contact</label>
+              <input type="text" id="point-contact" class="expandable" />
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label for="contact-number">Point of Contact Number</label>
+              <input type="text" id="contact-number" class="expandable" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Equipment Checklist -->
+      <div>
+        <h2>2. Equipment Checklist</h2>
+        <table id="equipment-checklist">
+          <thead>
+            <tr>
+              <th>Equipment</th>
+              <th>Available (Yes/No)</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Post phone</td>
+              <td>
+                <div class="checkbox-group">
+                  <input
+                    type="radio"
+                    id="post-phone-yes"
+                    name="post-phone"
+                    value="Yes"
+                  />
+                  <label for="post-phone-yes">Yes</label>
+                  <input
+                    type="radio"
+                    id="post-phone-no"
+                    name="post-phone"
+                    value="No"
+                  />
+                  <label for="post-phone-no">No</label>
+                </div>
+              </td>
+              <td><input type="text" class="expandable" /></td>
+            </tr>
+            <tr>
+              <td>iPad/Tablet</td>
+              <td>
+                <div class="checkbox-group">
+                  <input type="radio" id="ipad-yes" name="ipad" value="Yes" />
+                  <label for="ipad-yes">Yes</label>
+                  <input type="radio" id="ipad-no" name="ipad" value="No" />
+                  <label for="ipad-no">No</label>
+                </div>
+              </td>
+              <td><input type="text" class="expandable" /></td>
+            </tr>
+            <tr>
+              <td>QR Codes</td>
+              <td>
+                <div class="checkbox-group">
+                  <input type="radio" id="qr-yes" name="qr" value="Yes" />
+                  <label for="qr-yes">Yes</label>
+                  <input type="radio" id="qr-no" name="qr" value="No" />
+                  <label for="qr-no">No</label>
+                </div>
+              </td>
+              <td><input type="text" class="expandable" /></td>
+            </tr>
+            <tr>
+              <td>Radios</td>
+              <td>
+                <div class="checkbox-group">
+                  <input
+                    type="radio"
+                    id="radios-yes"
+                    name="radios"
+                    value="Yes"
+                  />
+                  <label for="radios-yes">Yes</label>
+                  <input type="radio" id="radios-no" name="radios" value="No" />
+                  <label for="radios-no">No</label>
+                </div>
+              </td>
+              <td><input type="text" class="expandable" /></td>
+            </tr>
+            <tr>
+              <td>Post Phone Charger</td>
+              <td>
+                <div class="checkbox-group">
+                  <input
+                    type="radio"
+                    id="phone-charger-yes"
+                    name="phone-charger"
+                    value="Yes"
+                  />
+                  <label for="phone-charger-yes">Yes</label>
+                  <input
+                    type="radio"
+                    id="phone-charger-no"
+                    name="phone-charger"
+                    value="No"
+                  />
+                  <label for="phone-charger-no">No</label>
+                </div>
+              </td>
+              <td><input type="text" class="expandable" /></td>
+            </tr>
+            <tr>
+              <td>iPad or Tablet Charger</td>
+              <td>
+                <div class="checkbox-group">
+                  <input
+                    type="radio"
+                    id="tablet-charger-yes"
+                    name="tablet-charger"
+                    value="Yes"
+                  />
+                  <label for="tablet-charger-yes">Yes</label>
+                  <input
+                    type="radio"
+                    id="tablet-charger-no"
+                    name="tablet-charger"
+                    value="No"
+                  />
+                  <label for="tablet-charger-no">No</label>
+                </div>
+              </td>
+              <td><input type="text" class="expandable" /></td>
+            </tr>
+            <tr>
+              <td>Silvertrac Reports</td>
+              <td>
+                <div class="checkbox-group">
+                  <input
+                    type="radio"
+                    id="silvertrac-yes"
+                    name="silvertrac"
+                    value="Yes"
+                  />
+                  <label for="silvertrac-yes">Yes</label>
+                  <input
+                    type="radio"
+                    id="silvertrac-no"
+                    name="silvertrac"
+                    value="No"
+                  />
+                  <label for="silvertrac-no">No</label>
+                </div>
+              </td>
+              <td><input type="text" class="expandable" /></td>
+            </tr>
+            <tr>
+              <td>Heater</td>
+              <td>
+                <div class="checkbox-group">
+                  <input
+                    type="radio"
+                    id="heater-yes"
+                    name="heater"
+                    value="Yes"
+                  />
+                  <label for="heater-yes">Yes</label>
+                  <input type="radio" id="heater-no" name="heater" value="No" />
+                  <label for="heater-no">No</label>
+                </div>
+              </td>
+              <td><input type="text" class="expandable" /></td>
+            </tr>
+            <tr>
+              <td>Fan</td>
+              <td>
+                <div class="checkbox-group">
+                  <input type="radio" id="fan-yes" name="fan" value="Yes" />
+                  <label for="fan-yes">Yes</label>
+                  <input type="radio" id="fan-no" name="fan" value="No" />
+                  <label for="fan-no">No</label>
+                </div>
+              </td>
+              <td><input type="text" class="expandable" /></td>
+            </tr>
+            <tr>
+              <td>Tent</td>
+              <td>
+                <div class="checkbox-group">
+                  <input type="radio" id="tent-yes" name="tent" value="Yes" />
+                  <label for="tent-yes">Yes</label>
+                  <input type="radio" id="tent-no" name="tent" value="No" />
+                  <label for="tent-no">No</label>
+                </div>
+              </td>
+              <td><input type="text" class="expandable" /></td>
+            </tr>
+            <tr>
+              <td>Clipboard</td>
+              <td>
+                <div class="checkbox-group">
+                  <input
+                    type="radio"
+                    id="clipboard-yes"
+                    name="clipboard"
+                    value="Yes"
+                  />
+                  <label for="clipboard-yes">Yes</label>
+                  <input
+                    type="radio"
+                    id="clipboard-no"
+                    name="clipboard"
+                    value="No"
+                  />
+                  <label for="clipboard-no">No</label>
+                </div>
+              </td>
+              <td><input type="text" class="expandable" /></td>
+            </tr>
+            <tr>
+              <td>Pen</td>
+              <td>
+                <div class="checkbox-group">
+                  <input type="radio" id="pen-yes" name="pen" value="Yes" />
+                  <label for="pen-yes">Yes</label>
+                  <input type="radio" id="pen-no" name="pen" value="No" />
+                  <label for="pen-no">No</label>
+                </div>
+              </td>
+              <td><input type="text" class="expandable" /></td>
+            </tr>
+            <tr>
+              <td>Lockbox</td>
+              <td>
+                <div class="checkbox-group">
+                  <input
+                    type="radio"
+                    id="lockbox-yes"
+                    name="lockbox"
+                    value="Yes"
+                  />
+                  <label for="lockbox-yes">Yes</label>
+                  <input
+                    type="radio"
+                    id="lockbox-no"
+                    name="lockbox"
+                    value="No"
+                  />
+                  <label for="lockbox-no">No</label>
+                </div>
+              </td>
+              <td><input type="text" class="expandable" /></td>
+            </tr>
+            <tr>
+              <td>Flashlight</td>
+              <td>
+                <div class="checkbox-group">
+                  <input
+                    type="radio"
+                    id="flashlight-yes"
+                    name="flashlight"
+                    value="Yes"
+                  />
+                  <label for="flashlight-yes">Yes</label>
+                  <input
+                    type="radio"
+                    id="flashlight-no"
+                    name="flashlight"
+                    value="No"
+                  />
+                  <label for="flashlight-no">No</label>
+                </div>
+              </td>
+              <td><input type="text" class="expandable" /></td>
+            </tr>
+            <tr>
+              <td>Keys</td>
+              <td>
+                <div class="checkbox-group">
+                  <input type="radio" id="keys-yes" name="keys" value="Yes" />
+                  <label for="keys-yes">Yes</label>
+                  <input type="radio" id="keys-no" name="keys" value="No" />
+                  <label for="keys-no">No</label>
+                </div>
+              </td>
+              <td><input type="text" class="expandable" /></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Section 3: Detailed Information -->
+      <div id="section-3-detailed-info">
+        <h2>3. Detailed Information</h2>
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label for="post-phone-number">Post Phone Number</label>
+              <input type="text" id="post-phone-number" class="expandable" />
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label for="post-phone-password">Post Phone Password</label>
+              <input type="text" id="post-phone-password" class="expandable" />
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label for="tablet-password">iPad or Tablet Password</label>
+              <input type="text" id="tablet-password" class="expandable" />
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label for="qr-quantity">Quantity of QR Codes</label>
+              <input type="number" id="qr-quantity" min="0" />
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label for="radios-quantity">Quantity of Radios</label>
+              <input type="number" id="radios-quantity" min="0" />
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label for="silvertrac-username">Silvertrac Username</label>
+              <input type="text" id="silvertrac-username" class="expandable" />
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label for="silvertrac-password">Silvertrac Password</label>
+              <input type="text" id="silvertrac-password" class="expandable" />
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label for="heaters-quantity">Quantity of Heaters</label>
+              <input type="number" id="heaters-quantity" min="0" />
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label for="fans-quantity">Quantity of Fans</label>
+              <input type="number" id="fans-quantity" min="0" />
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label for="tents-quantity">Quantity of Tents</label>
+              <input type="number" id="tents-quantity" min="0" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="additional-equipment">Additional Equipment Note</label>
+          <textarea id="additional-equipment" class="expandable"></textarea>
+        </div>
+      </div>
+
+      <!-- Section 4: Step by Step Details -->
+      <div id="section-4-steps">
+        <h2>4. Step by Step Details</h2>
+        <div id="steps-container">
+          <!-- Steps will be added here dynamically -->
+        </div>
+        <button type="button" class="add-step no-print" id="add-step-btn">
+          Add Step
+        </button>
+      </div>
+
+      <!-- Section 5: Special Instructions -->
+      <div id="special-instructions-section">
+        <h2>5. Special Instructions</h2>
+        <div class="form-group">
+          <label for="special-instructions">Instructions</label>
+          <textarea id="special-instructions" class="expandable"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="document-upload">Upload Documents</label>
+          <input
+            type="file"
+            id="document-upload"
+            class="file-upload no-print"
+            multiple
+          />
+          <div
+            id="document-list-for-pdf"
+            style="display: none; margin-top: 10px"
+          >
+            <strong>Uploaded Documents:</strong>
+            <ul
+              id="pdf-document-list"
+              style="margin-top: 5px; padding-left: 20px"
+            ></ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 6: Supervisor Details -->
+      <div id="supervisor-section">
+        <h2>6. Supervisor Details</h2>
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label for="supervisor-name">Supervisor Name</label>
+              <input type="text" id="supervisor-name" class="expandable" />
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label for="supervisor-date">Date</label>
+              <input type="date" id="supervisor-date" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="supervisor-contact">Supervisor Contact Number</label>
+          <input type="text" id="supervisor-contact" class="expandable" />
+        </div>
+
+        <div class="signature-container">
+          <label>Supervisor Signature</label>
+          <canvas
+            id="signature-pad"
+            class="signature-pad"
+            style="height: 150px"
+          ></canvas>
+          <div class="no-print" style="margin-top: 10px">
+            <button type="button" id="clear-signature" class="btn btn-danger">
+              Clear Signature
+            </button>
+          </div>
+        </div>
+
+        <div class="button-group no-print">
+          <button type="button" id="clear-form" class="btn btn-danger">
+            Clear Form
+          </button>
+          <button type="button" id="generate-pdf" class="btn btn-success">
+            Generate PDF
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function replaceTextareasWithDivs(container) {
+        const textareas = container.querySelectorAll("textarea");
+        const replacements = [];
+
+        textareas.forEach((textarea) => {
+          const div = document.createElement("div");
+          div.className = textarea.className;
+          div.style.whiteSpace = "pre-wrap"; // Preserves line breaks
+          div.style.border = textarea.style.border || "1px solid #ddd";
+          div.style.padding = "10px";
+          div.style.minHeight = textarea.style.minHeight || "100px";
+          div.innerHTML = textarea.value.replace(/\n/g, "<br>");
+
+          textarea.style.display = "none";
+          textarea.parentNode.insertBefore(div, textarea.nextSibling);
+
+          replacements.push({ textarea, div });
+        });
+
+        return replacements;
+      }
+
+      function restoreTextareas(replacements) {
+        replacements.forEach(({ textarea, div }) => {
+          div.remove();
+          textarea.style.display = "";
+        });
+      }
+
+      // Wait for all libraries to load
+      document.addEventListener("DOMContentLoaded", function () {
+        // Initialize jsPDF
+        const { jsPDF } = window.jspdf;
+
+        // Limit post address input and show live counter for post address
+        const postAddress = document.getElementById("post-address");
+        const counter = document.getElementById("post-address-counter");
+
+        postAddress.addEventListener("keypress", function (e) {
+          if (e.key === "Enter") {
+            e.preventDefault(); // Block Enter key
+          }
+        });
+
+        postAddress.addEventListener("input", function () {
+          // Trim if over max
+          if (this.value.length > 200) {
+            this.value = this.value.slice(0, 200);
+          }
+          const remaining = 200 - this.value.length;
+          counter.textContent = `${remaining} characters remaining`;
+        });
+
+        // Auto-expand textareas as user types
+        document.querySelectorAll(".expandable").forEach((textarea) => {
+          textarea.addEventListener("input", function () {
+            this.style.height = "auto";
+            this.style.height = this.scrollHeight + "px";
+          });
+        });
+
+        // Step by step functionality
+        let stepCounter = 1;
+        const stepsContainer = document.getElementById("steps-container");
+        const addStepBtn = document.getElementById("add-step-btn");
+
+        function addStep() {
+          const stepDiv = document.createElement("div");
+          stepDiv.className = "step-container";
+          stepDiv.innerHTML = `
+                    <div class="step-header">
+                        <span class="step-number">Step ${stepCounter}</span>
+                        <button type="button" class="remove-step no-print">Remove Step</button>
+                    </div>
+                    <div class="form-group">
+                        <label>Instructions</label>
+                        <textarea class="step-instructions expandable"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Upload Images</label>
+                        <input type="file" class="step-image-upload no-print" accept="image/*" multiple>
+                        <div class="image-preview-container"></div>
+                    </div>
+                `;
+
+          stepsContainer.appendChild(stepDiv);
+          stepCounter++;
+
+          // Add event listeners for the new step
+          const removeBtn = stepDiv.querySelector(".remove-step");
+          removeBtn.addEventListener("click", function () {
+            stepsContainer.removeChild(stepDiv);
+            renumberSteps();
+          });
+
+          const imageUpload = stepDiv.querySelector(".step-image-upload");
+          imageUpload.addEventListener("change", function (e) {
+            handleImageUpload(
+              e,
+              stepDiv.querySelector(".image-preview-container")
+            );
+          });
+
+          // Initialize auto-expand for the new textarea
+          const textarea = stepDiv.querySelector(".expandable");
+          textarea.addEventListener("input", function () {
+            this.style.height = "auto";
+            this.style.height = this.scrollHeight + "px";
+          });
+        }
+
+        function renumberSteps() {
+          const steps = document.querySelectorAll(".step-number");
+          steps.forEach((step, index) => {
+            step.textContent = `Step ${index + 1}`;
+          });
+          stepCounter = steps.length + 1;
+        }
+
+        addStepBtn.addEventListener("click", addStep);
+
+        // Image upload and preview functionality
+        function handleImageUpload(event, previewContainer) {
+          const files = event.target.files;
+          previewContainer.innerHTML = "";
+
+          for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            if (!file.type.match("image.*")) continue;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              const previewDiv = document.createElement("div");
+              previewDiv.className = "image-preview";
+              previewDiv.innerHTML = `
+                            <img src="${e.target.result}" alt="Preview">
+                            <button type="button" class="remove-image no-print">×</button>
+                        `;
+              previewContainer.appendChild(previewDiv);
+
+              // Add remove button functionality
+              const removeBtn = previewDiv.querySelector(".remove-image");
+              removeBtn.addEventListener("click", function () {
+                previewContainer.removeChild(previewDiv);
+              });
+            };
+            reader.readAsDataURL(file);
+          }
+        }
+
+        // Document upload functionality
+        const documentUpload = document.getElementById("document-upload");
+        const documentPreview = document.getElementById("document-preview");
+
+        documentUpload.addEventListener("change", function (e) {
+          const files = e.target.files;
+          documentPreview.innerHTML = "";
+
+          for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const fileURL = URL.createObjectURL(file);
+            const documentItem = document.createElement("div");
+            documentItem.className = "document-item";
+
+            if (file.type.startsWith("image/")) {
+              // If image, show image preview
+              const img = document.createElement("img");
+              img.src = fileURL;
+              img.alt = file.name;
+              img.style.maxWidth = "200px";
+              img.style.maxHeight = "200px";
+              documentItem.appendChild(img);
+            } else {
+              // If non-image, show downloadable link
+              const link = document.createElement("a");
+              link.href = fileURL;
+              link.download = file.name;
+              link.textContent = file.name;
+              link.target = "_blank";
+              link.style.marginRight = "10px";
+              documentItem.appendChild(link);
+            }
+
+            const removeBtn = document.createElement("button");
+            removeBtn.textContent = "Remove";
+            removeBtn.type = "button";
+            removeBtn.className = "no-print";
+            removeBtn.addEventListener("click", function () {
+              documentItem.remove();
+            });
+
+            documentItem.appendChild(removeBtn);
+            documentPreview.appendChild(documentItem);
+          }
+        });
+
+        // Signature functionality
+        const signaturePad = document.getElementById("signature-pad");
+        const clearSignature = document.getElementById("clear-signature");
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+        const ctx = signaturePad.getContext("2d");
+
+        // Set canvas size
+        function resizeCanvas() {
+          const ratio = Math.max(window.devicePixelRatio || 1, 1);
+          signaturePad.width = signaturePad.offsetWidth * ratio;
+          signaturePad.height = signaturePad.offsetHeight * ratio;
+          signaturePad.style.width = signaturePad.offsetWidth + "px";
+          signaturePad.style.height = signaturePad.offsetHeight + "px";
+          ctx.scale(ratio, ratio);
+          ctx.lineWidth = 2;
+          ctx.lineCap = "round";
+          ctx.strokeStyle = "#000";
+        }
+
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas();
+
+        signaturePad.addEventListener("mousedown", startDrawing);
+        signaturePad.addEventListener("touchstart", startDrawing);
+
+        signaturePad.addEventListener("mousemove", draw);
+        signaturePad.addEventListener("touchmove", draw);
+
+        signaturePad.addEventListener("mouseup", stopDrawing);
+        signaturePad.addEventListener("touchend", stopDrawing);
+        signaturePad.addEventListener("mouseout", stopDrawing);
+
+        function startDrawing(e) {
+          isDrawing = true;
+          const pos = getPosition(e);
+          lastX = pos.x;
+          lastY = pos.y;
+          e.preventDefault();
+        }
+
+        function draw(e) {
+          if (!isDrawing) return;
+
+          const pos = getPosition(e);
+          ctx.beginPath();
+          ctx.moveTo(lastX, lastY);
+          ctx.lineTo(pos.x, pos.y);
+          ctx.stroke();
+
+          lastX = pos.x;
+          lastY = pos.y;
+          e.preventDefault();
+        }
+
+        function stopDrawing() {
+          isDrawing = false;
+        }
+
+        function getPosition(e) {
+          let x, y;
+          if (e.type.includes("touch")) {
+            const touch = e.touches[0] || e.changedTouches[0];
+            x = touch.clientX - signaturePad.getBoundingClientRect().left;
+            y = touch.clientY - signaturePad.getBoundingClientRect().top;
+          } else {
+            x = e.clientX - signaturePad.getBoundingClientRect().left;
+            y = e.clientY - signaturePad.getBoundingClientRect().top;
+          }
+          return { x, y };
+        }
+
+        clearSignature.addEventListener("click", function () {
+          ctx.clearRect(0, 0, signaturePad.width, signaturePad.height);
+        });
+
+        // Generate PDF functionality with multi-page support
+        document
+          .getElementById("generate-pdf")
+          .addEventListener("click", async function () {
+            const btn = this;
+            const originalText = btn.textContent;
+            btn.textContent = "Generating PDF...";
+            btn.disabled = true;
+
+            try {
+              const noPrintElements = document.querySelectorAll(".no-print");
+              noPrintElements.forEach((el) => (el.style.visibility = "hidden"));
+
+              const inputs = document.querySelectorAll(
+                "input, textarea, select"
+              );
+              inputs.forEach((input) => {
+                input.setAttribute("data-original-readonly", input.readOnly);
+                input.readOnly = true;
+              });
+
+              const { jsPDF } = window.jspdf;
+              const pdf = new jsPDF("p", "pt", "a4");
+              const pdfWidth = pdf.internal.pageSize.getWidth() - 40;
+              const marginX = 20;
+              let y = 40;
+
+              // --- SECTION 1: Post Info as image ---
+              const postInfoSection = document.getElementById(
+                "section-1-post-info"
+              );
+              const canvas1 = await html2canvas(postInfoSection, { scale: 2 });
+              const img1 = canvas1.toDataURL("image/png");
+              const imgHeight1 = (canvas1.height * pdfWidth) / canvas1.width;
+              pdf.addImage(img1, "PNG", marginX, y, pdfWidth, imgHeight1);
+              y += imgHeight1 + 20;
+
+              // --- SECTION 2: Equipment Checklist as table ---
+              // --- SECTION 2: Equipment Checklist (selected only) ---
+              pdf.text("2. Equipment Checklist", marginX, y);
+              y += 10;
+
+              const checklistTable = document.getElementById(
+                "equipment-checklist"
+              );
+              const checklistRows = checklistTable.querySelectorAll("tbody tr");
+
+              const tableData = [];
+
+              checklistRows.forEach((row) => {
+                const equipment = row.children[0].textContent.trim();
+                const yesInput = row.querySelector('input[value="Yes"]');
+                const noInput = row.querySelector('input[value="No"]');
+
+                let selected = "N/A";
+                if (yesInput.checked) selected = "Yes";
+                else if (noInput.checked) selected = "No";
+
+                const notes =
+                  row.children[2].querySelector("input")?.value || "";
+
+                tableData.push([equipment, selected, notes]);
+              });
+
+              pdf.autoTable({
+                head: [["Equipment", "Available", "Notes"]],
+                body: tableData,
+                startY: y,
+                theme: "grid",
+                headStyles: { fillColor: [41, 128, 185] },
+                margin: { left: marginX, right: marginX },
+              });
+
+              y = pdf.lastAutoTable.finalY + 30;
+
+              // --- SECTION 3: Detailed Info as image ---
+              const detailedInfoSection = document.getElementById(
+                "section-3-detailed-info"
+              );
+              const canvas2 = await html2canvas(detailedInfoSection, {
+                scale: 2,
+              });
+              const img2 = canvas2.toDataURL("image/png");
+              const imgHeight2 = (canvas2.height * pdfWidth) / canvas2.width;
+
+              if (y + imgHeight2 > pdf.internal.pageSize.getHeight()) {
+                pdf.addPage();
+                y = 40;
+              }
+              pdf.addImage(img2, "PNG", marginX, y, pdfWidth, imgHeight2);
+
+              y += imgHeight2 + 30;
+
+              // --- SECTION 4: Step-by-Step Details ---
+              const stepSection = document.getElementById("section-4-steps");
+              let stepReplacements = [];
+              if (stepSection && stepSection.children.length > 0) {
+                stepReplacements = replaceTextareasWithDivs(stepSection); // 🟡 ADD HERE
+
+                const canvas3 = await html2canvas(stepSection, { scale: 2 });
+                const img3 = canvas3.toDataURL("image/png");
+                const imgHeight3 = (canvas3.height * pdfWidth) / canvas3.width;
+
+                if (y + imgHeight3 > pdf.internal.pageSize.getHeight()) {
+                  pdf.addPage();
+                  y = 40;
+                }
+                pdf.text("4. Step-by-Step Details", marginX, y);
+                y += 20;
+                pdf.addImage(img3, "PNG", marginX, y, pdfWidth, imgHeight3);
+                y += imgHeight3 + 30;
+
+                restoreTextareas(stepReplacements);
+              }
+
+              // Section 5
+              const specialInstructionsSection = document.getElementById(
+                "special-instructions-section"
+              );
+              const documentListDiv = document.getElementById(
+                "document-list-for-pdf"
+              );
+              const pdfList = document.getElementById("pdf-document-list");
+              pdfList.innerHTML = "";
+
+              const fileInput = document.getElementById("document-upload");
+              const files = fileInput.files;
+
+              if (files.length > 0) {
+                documentListDiv.style.display = "block";
+
+                for (let i = 0; i < files.length; i++) {
+                  const file = files[i];
+                  const li = document.createElement("li");
+
+                  if (file.type.startsWith("image/")) {
+                    const img = document.createElement("img");
+                    img.src = URL.createObjectURL(file);
+                    img.style.maxWidth = "400px";
+                    img.style.display = "block";
+                    img.style.marginTop = "10px";
+
+                    li.appendChild(document.createTextNode(file.name));
+                    li.appendChild(img);
+                  } else {
+                    li.innerHTML = `
+        <div><strong>File:</strong> ${file.name}</div>
+        <div><strong>Type:</strong> ${file.type || "Unknown"}</div>
+        <div><strong>Size:</strong> ${(file.size / 1024).toFixed(1)} KB</div>
+      `;
+                  }
+
+                  pdfList.appendChild(li);
+                }
+              }
+
+              // Capture the full section with rendered file list
+              if (specialInstructionsSection) {
+                const canvas5 = await html2canvas(specialInstructionsSection, {
+                  scale: 2,
+                });
+                const img5 = canvas5.toDataURL("image/png");
+                const imgHeight5 = (canvas5.height * pdfWidth) / canvas5.width;
+
+                if (y + imgHeight5 > pdf.internal.pageSize.getHeight()) {
+                  pdf.addPage();
+                  y = 40;
+                }
+                pdf.text("5. Special Instructions", marginX, y);
+                y += 20;
+                pdf.addImage(img5, "PNG", marginX, y, pdfWidth, imgHeight5);
+                y += imgHeight5 + 30;
+
+                documentListDiv.style.display = "none"; // hide after capture
+              }
+
+              // --- SECTION 6: Supervisor Details ---
+              const supervisorInputsSection =
+                document.getElementById("supervisor-section");
+              if (supervisorInputsSection) {
+                const canvas4 = await html2canvas(supervisorInputsSection, {
+                  scale: 2,
+                });
+                const img4 = canvas4.toDataURL("image/png");
+                const imgHeight4 = (canvas4.height * pdfWidth) / canvas4.width;
+
+                if (y + imgHeight4 > pdf.internal.pageSize.getHeight()) {
+                  pdf.addPage();
+                  y = 40;
+                }
+                pdf.text("6. Supervisor Details", marginX, y);
+                y += 20;
+                pdf.addImage(img4, "PNG", marginX, y, pdfWidth, imgHeight4);
+                y += imgHeight4 + 30;
+              }
+
+              // Restore state
+              noPrintElements.forEach(
+                (el) => (el.style.visibility = "visible")
+              );
+              inputs.forEach((input) => {
+                input.readOnly =
+                  input.getAttribute("data-original-readonly") === "true";
+              });
+
+              pdf.save("Security_Post_Orders.pdf");
+            } catch (error) {
+              console.error("PDF generation error:", error);
+              alert("Error generating PDF.");
+            } finally {
+              btn.textContent = originalText;
+              btn.disabled = false;
+            }
+          });
+
+        // Clear form functionality
+        document
+          .getElementById("clear-form")
+          .addEventListener("click", function () {
+            if (confirm("Are you sure you want to clear the entire form?")) {
+              document.getElementById("post-orders-form").reset();
+              stepsContainer.innerHTML = "";
+              stepCounter = 1;
+              documentPreview.innerHTML = "";
+              ctx.clearRect(0, 0, signaturePad.width, signaturePad.height);
+
+              // Reset all textarea heights
+              document.querySelectorAll(".expandable").forEach((textarea) => {
+                textarea.style.height = "auto";
+              });
+            }
+          });
+
+        // Initialize with one step
+        addStep();
+      });
+    </script>
+  </body>
+</html>
